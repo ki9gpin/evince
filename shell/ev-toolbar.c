@@ -215,7 +215,7 @@ ev_toolbar_constructed (GObject *object)
         /* Page selector */
         /* Use EvPageActionWidget for now, since the page selector action is also used by the previewer */
         tool_item = GTK_WIDGET (g_object_new (EV_TYPE_PAGE_ACTION_WIDGET, NULL));
-        gtk_widget_set_tooltip_text (tool_item, _("Select page or search in the index"));
+        gtk_widget_set_tooltip_text (tool_item, _("Select page or search in the outline"));
         atk_object_set_name (gtk_widget_get_accessible (tool_item), _("Select page"));
         priv->page_selector = tool_item;
         ev_page_action_widget_set_model (EV_PAGE_ACTION_WIDGET (tool_item),
