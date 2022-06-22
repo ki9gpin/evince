@@ -285,6 +285,17 @@ create_loading_model (void)
 }
 
 static void
+search_section_cb (GtkWidget *menuitem, EvSidebarLinks *sidebar)
+{
+	GtkWidget *window;
+
+	window = gtk_widget_get_toplevel (GTK_WIDGET (sidebar));
+	if (EV_IS_WINDOW (window)) {
+		ev_window_start_page_selector_search (EV_WINDOW (window));
+	}
+}
+
+static void
 print_section_cb (GtkWidget *menuitem, EvSidebarLinks *sidebar)
 {
 	GtkWidget *window;
@@ -348,6 +359,12 @@ build_popup_menu (EvSidebarLinks *sidebar)
 	GtkWidget *item;
 
 	menu = gtk_menu_new ();
+	item = gtk_menu_item_new_with_mnemonic(_("Search in the outline…"));
+	gtk_widget_show (item);
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+	g_signal_connect (item, "activate",
+			  G_CALLBACK (search_section_cb), sidebar);
+
 	item = gtk_menu_item_new_with_mnemonic(_("Print…"));
 	gtk_widget_show (item);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
@@ -430,7 +447,10 @@ check_menu_sensitivity (GtkTreeView *treeview,
 		}
 	}
 
-	if (is_list)
+	if (!selected_path)
+		gtk_widget_set_sensitive (menu_item_expand_under, FALSE);
+
+	if (is_list || !selected_path)
 		return;
 
 	/* Enable 'Expand under this' only when 'this' element has grandchildren */
@@ -471,6 +491,20 @@ check_menu_sensitivity (GtkTreeView *treeview,
 }
 
 static gboolean
+path_is_selected (GtkTreeView *treeview,
+		  GtkTreePath *path)
+{
+	GtkTreeModel *model;
+	GtkTreeSelection *selection;
+	GtkTreeIter iter;
+
+	model = gtk_tree_view_get_model (treeview);
+	selection = gtk_tree_view_get_selection (treeview);
+	return gtk_tree_model_get_iter (model, &iter, path) &&
+	       gtk_tree_selection_iter_is_selected (selection, &iter);
+}
+
+static gboolean
 button_press_cb (GtkWidget *treeview,
                  GdkEventButton *event,
                  EvSidebarLinks *sidebar)
@@ -490,8 +524,8 @@ button_press_cb (GtkWidget *treeview,
                 	                           event->y,
 	                                           &path,
         	                                   NULL, NULL, NULL)) {
-			gtk_tree_view_set_cursor (GTK_TREE_VIEW (treeview),
-						  path, NULL, FALSE);
+			if (! path_is_selected (GTK_TREE_VIEW (treeview), path))
+				path = NULL;
 			check_menu_sensitivity (GTK_TREE_VIEW (treeview), path, sidebar);
 			gtk_menu_popup_at_pointer (menu,
 						   (GdkEvent *) event);

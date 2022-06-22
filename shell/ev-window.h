@@ -102,5 +102,6 @@ GtkWidget      *ev_window_get_sidebar			 (EvWindow	 *ev_window);
 GtkWidget      *ev_window_get_find_sidebar		 (EvWindow	 *ev_window);
 void            ev_window_set_divider_position		 (EvWindow	 *ev_window,
 							  gint		  sidebar_width);
+void            ev_window_start_page_selector_search     (EvWindow       *window);
 
 G_END_DECLS
