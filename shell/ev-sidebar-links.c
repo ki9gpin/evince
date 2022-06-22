@@ -90,6 +90,7 @@ static gboolean ev_sidebar_links_support_document	(EvSidebarPage  *sidebar_page,
 static const gchar* ev_sidebar_links_get_label 		(EvSidebarPage *sidebar_page);
 
 static guint signals[N_SIGNALS];
+static GtkWidget *menu_item_print_section;
 static GtkWidget *menu_item_collapse_all;
 static GtkWidget *menu_item_expand_all;
 static GtkWidget *menu_item_expand_under;
@@ -365,8 +366,9 @@ build_popup_menu (EvSidebarLinks *sidebar)
 	g_signal_connect (item, "activate",
 			  G_CALLBACK (search_section_cb), sidebar);
 
-	item = gtk_menu_item_new_with_mnemonic(_("Print…"));
+	item = gtk_menu_item_new_with_mnemonic(_("Print this section…"));
 	gtk_widget_show (item);
+	menu_item_print_section = item; /* save ref to sensitivize later */
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 	g_signal_connect (item, "activate",
 			  G_CALLBACK (print_section_cb), sidebar);
@@ -447,11 +449,15 @@ check_menu_sensitivity (GtkTreeView *treeview,
 		}
 	}
 
-	if (!selected_path)
+	if (!selected_path) {
 		gtk_widget_set_sensitive (menu_item_expand_under, FALSE);
+		gtk_widget_set_sensitive (menu_item_print_section, FALSE);
+	}
 
 	if (is_list || !selected_path)
 		return;
+
+	gtk_widget_set_sensitive (menu_item_print_section, TRUE);
 
 	/* Enable 'Expand under this' only when 'this' element has grandchildren */
 	gtk_tree_model_get_iter (model, &parent, selected_path);

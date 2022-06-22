@@ -53,7 +53,6 @@ struct _EvPageActionWidget
 	gulong notify_document_signal_id;
 	GtkTreeModel *filter_model;
 	GtkTreeModel *model;
-	GtkEntryCompletion *completion;
 };
 
 static guint widget_signals[WIDGET_N_SIGNALS] = {0, };
@@ -344,8 +343,6 @@ ev_page_action_widget_finalize (GObject *object)
 		action_widget->doc_model = NULL;
 	}
 
-	g_clear_object (&action_widget->completion);
-
         ev_page_action_widget_set_document (action_widget, NULL);
 
 	G_OBJECT_CLASS (ev_page_action_widget_parent_class)->finalize (object);
@@ -571,8 +568,6 @@ ev_page_action_widget_update_links_model (EvPageActionWidget *proxy, GtkTreeMode
 	filter_model = get_filter_model_from_model (model);
 
 	completion = gtk_entry_completion_new ();
-	g_clear_object (&proxy->completion);
-	proxy->completion = completion;
 	g_object_set (G_OBJECT (completion),
 		      "popup-set-width", FALSE,
 		      "model", filter_model,
