@@ -115,7 +115,7 @@ typedef enum {
         EV_ANNOTATION_TEXT_MARKUP_SQUIGGLY
 } EvAnnotationTextMarkupType;
 
-#define EV_ANNOTATION_DEFAULT_COLOR ((const GdkRGBA) { 1., 1., 0, 1.});
+#define EV_ANNOTATION_DEFAULT_COLOR ((const GdkRGBA) { 0, 1., 0, 1.});
 
 /* EvAnnotation */
 EV_PUBLIC
